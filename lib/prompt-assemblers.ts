@@ -1,0 +1,127 @@
+import type { PromptFormState, MidjourneyPrompt, FluxPrompt, NanoBananaPrompt, AssembledPrompts } from "./types";
+import { ASPECT_RATIOS } from "./constants";
+
+export function assembleMidjourney(f: PromptFormState): MidjourneyPrompt {
+  const descParts: string[] = [];
+  if (f.style_text) descParts.push(f.style_text);
+  if (f.subject) descParts.push(f.subject);
+  if (f.action) descParts.push(f.action);
+  if (f.scene) descParts.push(f.scene);
+  if (f.camera) descParts.push(f.camera);
+  if (f.lens) descParts.push(f.lens);
+  if (f.lighting) descParts.push(f.lighting);
+  if (f.mood) descParts.push(f.mood);
+  if (f.colors_verbal) descParts.push(f.colors_verbal);
+
+  const prompt = descParts.filter(Boolean).join(", ");
+  if (!prompt) return { prompt: "", style: null, aspect_ratio: null, version: "7", quality: "1", stylize: null, chaos: null, weird: null, style_mode: null, negative: null, seed: null, full_command: "" };
+
+  const params: string[] = [];
+  if (f.ar) params.push(`--ar ${f.ar}`);
+  if (f.mj_style_raw) params.push("--style raw");
+  if (f.mj_version) params.push(`--v ${f.mj_version}`);
+  if (f.mj_stylize) params.push(`--stylize ${f.mj_stylize}`);
+  if (f.mj_quality && f.mj_quality !== "1") params.push(`--q ${f.mj_quality}`);
+  if (f.mj_chaos) params.push(`--chaos ${f.mj_chaos}`);
+  if (f.mj_weird) params.push(`--weird ${f.mj_weird}`);
+  if (f.mj_seed) params.push(`--seed ${f.mj_seed}`);
+  if (f.negative) params.push(`--no ${f.negative}`);
+
+  const full_command = prompt + (params.length ? " " + params.join(" ") : "");
+
+  return {
+    prompt,
+    style: f.style_text || null,
+    aspect_ratio: f.ar || null,
+    version: f.mj_version || "7",
+    quality: f.mj_quality || "1",
+    stylize: f.mj_stylize || null,
+    chaos: f.mj_chaos || null,
+    weird: f.mj_weird || null,
+    style_mode: f.mj_style_raw ? "raw" : null,
+    negative: f.negative || null,
+    seed: f.mj_seed || null,
+    full_command,
+  };
+}
+
+export function assembleFlux(f: PromptFormState): FluxPrompt {
+  const descParts: string[] = [];
+  if (f.subject) descParts.push(f.subject);
+  if (f.action) descParts.push(f.action);
+  if (f.scene) descParts.push(f.scene);
+  if (f.style_text) descParts.push(f.style_text);
+  if (f.lighting) descParts.push(f.lighting);
+  if (f.mood) descParts.push(f.mood);
+  if (f.colors_verbal) descParts.push(f.colors_verbal);
+  if (f.camera) descParts.push(f.camera);
+  if (f.lens) descParts.push(f.lens);
+
+  const prompt = descParts.filter(Boolean).join(". ").replace(/\.\./g, ".") + ".";
+
+  let width = 1024, height = 1024;
+  if (f.ar) {
+    const map: Record<string, [number, number]> = { "1:1": [1024,1024], "4:5": [896,1120], "9:16": [576,1024], "16:9": [1024,576], "3:2": [1024,680], "21:9": [1024,440], "4:1": [1024,256] };
+    const dims = map[f.ar];
+    if (dims) { width = dims[0]; height = dims[1]; }
+  }
+
+  return {
+    prompt: prompt || "",
+    negative_prompt: f.negative || "blurry, low quality, watermark, text",
+    width,
+    height,
+    steps: 28,
+    guidance_scale: 7.5,
+    seed: null,
+    style_preset: f.flux_style_preset || null,
+    scheduler: "DPM++ 2M Karras",
+  };
+}
+
+export function assembleNanoBanana(f: PromptFormState): NanoBananaPrompt {
+  const parts: string[] = [];
+  parts.push("Generiere ein hochauflösendes Bild:");
+  if (f.subject) parts.push(f.subject);
+  if (f.action) parts.push(f.action);
+  if (f.scene) parts.push(f.scene);
+  if (f.style_text) parts.push(f.style_text);
+  if (f.lighting) parts.push(f.lighting);
+  if (f.mood) parts.push(f.mood);
+  if (f.colors_hex) parts.push(`Dominante Farben: ${f.colors_hex}`);
+  else if (f.colors_verbal) parts.push(f.colors_verbal);
+  if (f.camera) parts.push(f.camera);
+  if (f.lens) parts.push(f.lens);
+  if (f.text_in_image) parts.push(`Im Bild steht der Text "${f.text_in_image}" in ${f.text_style || "klarer, gut lesbarer Schrift"}`);
+  const qt = f.nb_quality_tags || [];
+  if (qt.length > 0) parts.push(qt.join(", "));
+  if (f.ar) {
+    const fmtMap: Record<string, string> = { "1:1": "quadratisches Format 1:1", "4:5": "Hochformat 4:5", "9:16": "Hochformat 9:16", "16:9": "Querformat 16:9", "3:2": "Querformat 3:2", "21:9": "Panorama 21:9", "4:1": "breites Bannerformat 4:1" };
+    parts.push(fmtMap[f.ar] || f.ar);
+  }
+  if (f.negative_positive) parts.push(f.negative_positive);
+
+  const full_prompt = parts.filter(Boolean).join(". ").replace(/\.\./g, ".").replace(/\. \./g, ".") + ".";
+
+  return {
+    subject: f.subject || null,
+    action: f.action || null,
+    scene: f.scene || null,
+    style: f.style_text || null,
+    lighting: f.lighting || null,
+    mood: f.mood || null,
+    color_palette: f.colors_hex || f.colors_verbal || null,
+    quality_tags: qt.length > 0 ? qt : ["hochauflösend", "professionelle Qualität"],
+    format_description: f.ar ? ASPECT_RATIOS[f.ar] : null,
+    text_content: f.text_in_image || null,
+    full_prompt,
+  };
+}
+
+export function assembleAll(f: PromptFormState): AssembledPrompts {
+  const result: AssembledPrompts = {};
+  if (f.selectedAIs.includes("Midjourney")) result["Midjourney"] = assembleMidjourney(f);
+  if (f.selectedAIs.includes("Flux")) result["Flux"] = assembleFlux(f);
+  if (f.selectedAIs.includes("Nano Banana Pro")) result["Nano Banana Pro"] = assembleNanoBanana(f);
+  return result;
+}
