@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme {
+  /* Background layers */
+  --color-bg-base: #0a0a0f;
+  --color-bg-surface: #12121e;
+  --color-bg-elevated: #1a1a2e;
+  --color-bg-deep: #08080d;
+
+  /* Borders */
+  --color-border-default: #1a1a2e;
+  --color-border-accent: #2a2a4e;
+
+  /* Text */
+  --color-text-primary: #e0e0e0;
+  --color-text-secondary: #888888;
+  --color-text-muted: #666666;
+
+  /* AI Accent Colors */
+  --color-mj: #7c6cff;
+  --color-mj-light: #a78bfa;
+  --color-flux: #f97316;
+  --color-flux-light: #fb923c;
+  --color-nb: #10b981;
+  --color-nb-light: #34d399;
+}
