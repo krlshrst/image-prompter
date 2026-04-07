@@ -75,8 +75,13 @@ Formel: [Subjekt] + [Medium / Stil] + [Komposition / Kamera] + [Licht] + [Atmosp
 Farben verbal beschreiben (MJ versteht KEINE Hex-Codes). Reihenfolge zählt: Frühe Begriffe wirken stärker.
 Parameter: prompt, style, aspect_ratio, version ("7"), quality ("1"/"2"), stylize (0-1000), chaos (0-100), weird (0-3000), style_mode ("raw"/null), negative, seed, full_command
 
-FLUX
-Parameter: prompt (2-4 Sätze), negative_prompt, width, height, steps, guidance_scale, seed, style_preset, scheduler
+FLUX 2 PRO – Natural Language + Hex + Text Rendering
+Schreibe 2-4 vollständige natürliche Sätze (kein Komma-Tag-Stil).
+Flux 2 Pro versteht **Hex-Farbwerte direkt** – wenn du Farben aus dem Bild extrahierst, gib sie IMMER als konkrete Hex-Codes im prompt-Text an (z.B. "Farbpalette: #1a2b3c, #f5e6d3, #8b4513"). NICHT nur verbal beschreiben.
+Flux 2 Pro rendert **Text im Bild** zuverlässig – wenn Text sichtbar ist, integriere ihn wörtlich in Anführungszeichen in den Prompt.
+Auflösung bis ~4 MP (z.B. 2048x1152 für 16:9, 1536x1536 für 1:1).
+Defaults: model "flux-2-pro", steps 32, guidance_scale 3.5, scheduler "Euler".
+Parameter: model ("flux-2-pro"), prompt (2-4 Sätze inkl. Hex-Codes & ggf. Text), negative_prompt, width, height, steps, guidance_scale, seed, style_preset, scheduler
 
 NANO BANANA PRO – Konversationell, Natural Language Only
 Kein Parameter-System. Alles über natürliche Sprache.
