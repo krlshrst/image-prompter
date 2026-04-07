@@ -46,36 +46,69 @@ export function assembleMidjourney(f: PromptFormState): MidjourneyPrompt {
 }
 
 export function assembleFlux(f: PromptFormState): FluxPrompt {
-  const descParts: string[] = [];
-  if (f.subject) descParts.push(f.subject);
-  if (f.action) descParts.push(f.action);
-  if (f.scene) descParts.push(f.scene);
-  if (f.style_text) descParts.push(f.style_text);
-  if (f.lighting) descParts.push(f.lighting);
-  if (f.mood) descParts.push(f.mood);
-  if (f.colors_verbal) descParts.push(f.colors_verbal);
-  if (f.camera) descParts.push(f.camera);
-  if (f.lens) descParts.push(f.lens);
+  // Flux 2 Pro versteht natürliche Sprache, Hex-Farbcodes und Text-im-Bild nativ.
+  // Wir bauen daher zusammenhängende Sätze statt Komma-Tags.
+  const sentences: string[] = [];
 
-  const prompt = descParts.filter(Boolean).join(". ").replace(/\.\./g, ".") + ".";
+  const mainParts: string[] = [];
+  if (f.subject) mainParts.push(f.subject);
+  if (f.action) mainParts.push(f.action);
+  if (f.scene) mainParts.push(`in ${f.scene}`);
+  if (mainParts.length) sentences.push(mainParts.join(" "));
 
-  let width = 1024, height = 1024;
+  if (f.style_text) sentences.push(`Stil: ${f.style_text}`);
+  if (f.lighting) sentences.push(`Beleuchtung: ${f.lighting}`);
+  if (f.mood) sentences.push(`Stimmung: ${f.mood}`);
+
+  // Flux 2 Pro kann Hex-Werte direkt verarbeiten
+  if (f.colors_hex) {
+    sentences.push(`Farbpalette mit exakten Hex-Werten: ${f.colors_hex}`);
+  } else if (f.colors_verbal) {
+    sentences.push(`Farbpalette: ${f.colors_verbal}`);
+  }
+
+  const camParts: string[] = [];
+  if (f.camera) camParts.push(f.camera);
+  if (f.lens) camParts.push(f.lens);
+  if (camParts.length) sentences.push(`Kamera: ${camParts.join(", ")}`);
+
+  // Flux 2 Pro rendert Text im Bild zuverlässig
+  if (f.text_in_image) {
+    const textStyle = f.text_style ? ` in ${f.text_style}` : "";
+    sentences.push(`Im Bild ist exakt der Text "${f.text_in_image}"${textStyle} klar lesbar zu sehen`);
+  }
+
+  if (f.flux_style_preset) sentences.push(`Style-Preset: ${f.flux_style_preset}`);
+
+  const prompt = sentences.filter(Boolean).join(". ") + (sentences.length ? "." : "");
+
+  // Flux 2 Pro unterstützt höhere Auflösungen (bis ~4MP)
+  let width = 1536, height = 1536;
   if (f.ar) {
-    const map: Record<string, [number, number]> = { "1:1": [1024,1024], "4:5": [896,1120], "9:16": [576,1024], "16:9": [1024,576], "3:2": [1024,680], "21:9": [1024,440], "4:1": [1024,256] };
+    const map: Record<string, [number, number]> = {
+      "1:1": [1536, 1536],
+      "4:5": [1408, 1760],
+      "9:16": [1152, 2048],
+      "16:9": [2048, 1152],
+      "3:2": [1824, 1216],
+      "21:9": [2048, 880],
+      "4:1": [2048, 512],
+    };
     const dims = map[f.ar];
     if (dims) { width = dims[0]; height = dims[1]; }
   }
 
   return {
-    prompt: prompt || "",
-    negative_prompt: f.negative || "blurry, low quality, watermark, text",
+    model: "flux-2-pro",
+    prompt,
+    negative_prompt: f.negative || "blurry, low quality, watermark",
     width,
     height,
-    steps: 28,
-    guidance_scale: 7.5,
+    steps: 32,
+    guidance_scale: 3.5,
     seed: null,
     style_preset: f.flux_style_preset || null,
-    scheduler: "DPM++ 2M Karras",
+    scheduler: "Euler",
   };
 }
 

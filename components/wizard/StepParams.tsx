@@ -25,7 +25,7 @@ export function StepParams({ formState, setField, toggleAI, toggleQualityTag }: 
           <label key={ai} className="flex items-center gap-2 cursor-pointer text-sm text-text-primary">
             <input type="checkbox" checked={formState.selectedAIs.includes(ai)} onChange={() => toggleAI(ai)} className="accent-mj w-4 h-4" />
             {ai}
-            <span className="text-[10px] text-text-muted">{ai === "Midjourney" ? "V7" : ai === "Nano Banana Pro" ? "Gemini" : ""}</span>
+            <span className="text-[10px] text-text-muted">{ai === "Midjourney" ? "V7" : ai === "Nano Banana Pro" ? "Gemini" : ai === "Flux" ? "2 Pro · Hex & Text" : ""}</span>
           </label>
         ))}
       </div>

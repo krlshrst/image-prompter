@@ -45,6 +45,7 @@ export interface MidjourneyPrompt {
 }
 
 export interface FluxPrompt {
+  model: string;
   prompt: string;
   negative_prompt: string;
   width: number;

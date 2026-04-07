@@ -186,6 +186,15 @@ export function InputPanel({ formState, setField, applyTemplate, toggleAI, toggl
           </div>
         )}
 
+        {formState.selectedAIs.includes("Flux") && (
+          <div className="bg-flux/5 border border-flux/20 rounded-md p-2.5 mb-2">
+            <span className="text-[11px] font-semibold text-text-muted block mb-1">Flux 2 Pro</span>
+            <p className="text-[10px] text-text-muted leading-snug">
+              Versteht natürliche Sprache, <strong className="text-text-secondary">Hex-Farbwerte</strong> (Farbpalette → Hex) und rendert <strong className="text-text-secondary">Text im Bild</strong> (Text-Feld) zuverlässig. Auflösung bis ~4 MP.
+            </p>
+          </div>
+        )}
+
         {formState.selectedAIs.includes("Nano Banana Pro") && (
           <div className="bg-nb/5 border border-nb/20 rounded-md p-2.5 mb-2">
             <span className="text-[11px] font-semibold text-text-muted block mb-1.5">NB Qualität</span>
