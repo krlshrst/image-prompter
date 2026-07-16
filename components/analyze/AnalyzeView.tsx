@@ -8,6 +8,12 @@ import { PromptPreview } from "@/components/shared/PromptPreview";
 import { CopyButton } from "@/components/shared/CopyButton";
 import { toXML } from "@/lib/xml-export";
 
+const MODEL_BG: Record<AISystem, string> = {
+  "Midjourney": "bg-mj-pastel",
+  "Flux": "bg-flux-pastel",
+  "Nano Banana Pro": "bg-nb-pastel",
+};
+
 export function AnalyzeView() {
   const [description, setDescription] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -88,75 +94,108 @@ export function AnalyzeView() {
     }
   }
 
-  const inputClass = "w-full bg-bg-elevated border border-border-accent rounded-lg px-3 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-mj/50";
-  const labelClass = "text-xs font-semibold text-text-secondary block mb-1.5";
-
   return (
     <div>
-      <div className="bg-bg-surface border border-border-default rounded-xl p-4 mb-3">
-        <label className={labelClass}>Bild hochladen (optional)</label>
-        <div onClick={() => fileRef.current?.click()} className="border-2 border-dashed border-border-accent rounded-xl p-6 text-center cursor-pointer bg-bg-elevated hover:border-mj/30 transition-colors mb-3">
+      <section className="card-brutal p-4 mb-4">
+        <label className="label-brutal">Bild hochladen (optional)</label>
+        <div
+          onClick={() => fileRef.current?.click()}
+          className="border-2 border-dashed border-ink rounded-xl p-6 text-center cursor-pointer bg-paper hover:bg-cat-licht/50 transition-colors mb-3"
+        >
           {imagePreview ? (
-            <img src={imagePreview} alt="preview" className="max-h-44 max-w-full mx-auto rounded-lg" />
+            <img src={imagePreview} alt="Vorschau des hochgeladenen Bildes" className="max-h-44 max-w-full mx-auto rounded-lg border-2 border-ink" />
           ) : (
-            <span className="text-text-muted text-sm">Klicken zum Hochladen - JPG, PNG, WebP</span>
+            <span className="text-ink-muted text-sm font-semibold">Klicken zum Hochladen — JPG, PNG, WebP</span>
           )}
           <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} className="hidden" />
         </div>
         {imagePreview && (
-          <button onClick={() => { setImagePreview(null); setImageBase64(null); }} className="text-xs text-red-400 bg-red-500/10 px-3 py-1.5 rounded-lg hover:bg-red-500/20 cursor-pointer mb-3">Bild entfernen</button>
+          <button
+            onClick={() => { setImagePreview(null); setImageBase64(null); }}
+            className="btn-brutal-off px-3 py-1.5 text-xs font-bold mb-3"
+          >
+            Bild entfernen ✕
+          </button>
         )}
-        <label className={labelClass}>Beschreibung</label>
-        <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Beschreibe das gewünschte Bild oder ergänze den Upload..." rows={3} className={`${inputClass} resize-y leading-relaxed`} />
-      </div>
+        <label className="label-brutal" htmlFor="an-desc">Beschreibung</label>
+        <textarea
+          id="an-desc"
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+          placeholder="Beschreibe das gewünschte Bild oder ergänze den Upload…"
+          rows={3}
+          className="input-brutal resize-y leading-relaxed"
+        />
+      </section>
 
-      <div className="grid grid-cols-3 gap-3 mb-3">
-        <div className="bg-bg-surface border border-border-default rounded-xl p-3">
-          <label className={labelClass}>Ziel-KIs</label>
-          {AI_SYSTEMS.map(ai => (
-            <label key={ai} className="flex items-center gap-2 mb-1.5 cursor-pointer text-xs text-text-primary">
-              <input type="checkbox" checked={selectedAIs.includes(ai)} onChange={() => toggleAI(ai)} className="accent-mj" />
-              {ai}
-            </label>
-          ))}
-        </div>
-        <div className="bg-bg-surface border border-border-default rounded-xl p-3">
-          <label className={labelClass}>Seitenverhältnis</label>
-          <select value={aspectRatio} onChange={e => setAspectRatio(e.target.value)} className={inputClass}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <section className="card-brutal p-4">
+          <h3 className="label-brutal">Ziel-Modelle</h3>
+          <div className="flex flex-col gap-2 items-start">
+            {AI_SYSTEMS.map(ai => (
+              <button
+                key={ai}
+                onClick={() => toggleAI(ai)}
+                aria-pressed={selectedAIs.includes(ai)}
+                className={`px-3 py-1.5 text-[11px] uppercase tracking-[0.04em] font-display ${
+                  selectedAIs.includes(ai) ? `btn-brutal ${MODEL_BG[ai]}` : "btn-brutal-off font-bold"
+                }`}
+              >
+                {ai}
+              </button>
+            ))}
+          </div>
+        </section>
+        <section className="card-brutal p-4">
+          <label className="label-brutal" htmlFor="an-ar">Seitenverhältnis</label>
+          <select id="an-ar" value={aspectRatio} onChange={e => setAspectRatio(e.target.value)} className="input-brutal mb-3">
             {Object.entries(ASPECT_RATIOS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
-          <label className={`${labelClass} mt-2.5`}>Stil-Preset</label>
-          <select value={stylePreset} onChange={e => setStylePreset(e.target.value)} className={inputClass}>
+          <label className="label-brutal" htmlFor="an-style">Stil-Preset</label>
+          <select id="an-style" value={stylePreset} onChange={e => setStylePreset(e.target.value)} className="input-brutal">
             {Object.keys(STYLE_OPTIONS).map(k => <option key={k} value={k}>{k || "Kein Preset"}</option>)}
           </select>
-        </div>
-        <div className="bg-bg-surface border border-border-default rounded-xl p-3">
-          <label className={labelClass}>Format</label>
-          {(["JSON", "XML"] as const).map(fmt => (
-            <label key={fmt} className="flex items-center gap-2 mb-1.5 cursor-pointer text-xs text-text-primary">
-              <input type="radio" name="afmt" value={fmt} checked={outputFormat === fmt} onChange={() => setOutputFormat(fmt)} className="accent-mj" />
-              {fmt}
-            </label>
-          ))}
-        </div>
+        </section>
+        <section className="card-brutal p-4">
+          <h3 className="label-brutal">Ausgabeformat</h3>
+          <div className="flex gap-1.5">
+            {(["JSON", "XML"] as const).map(fmt => (
+              <button
+                key={fmt}
+                onClick={() => setOutputFormat(fmt)}
+                className={`tile-brutal ${outputFormat === fmt ? "tile-on" : ""}`}
+              >
+                {fmt}
+              </button>
+            ))}
+          </div>
+        </section>
       </div>
 
-      {error && <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 mb-3 text-sm text-red-400">{error}</div>}
+      {error && (
+        <div className="card-brutal bg-cat-farben p-3 mb-4 text-sm font-semibold text-ink">
+          {error}
+        </div>
+      )}
 
-      <button onClick={generate} disabled={loading} className="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-mj to-nb hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50">
-        {loading ? "Analysiere & generiere..." : "Prompts generieren"}
+      <button
+        onClick={generate}
+        disabled={loading}
+        className="btn-brutal bg-action w-full py-3.5 font-display text-[13px] font-extrabold uppercase tracking-[0.05em] disabled:opacity-50"
+      >
+        {loading ? "Analysiere & generiere…" : "Prompts generieren →"}
       </button>
 
       {result && (
-        <div className="mt-6">
-          <h2 className="text-base font-bold mb-3">Generierte Prompts</h2>
+        <div className="mt-7">
+          <h2 className="font-display text-sm font-bold uppercase tracking-[0.12em] mb-3">Generierte Prompts</h2>
           {selectedAIs.length > 1 && (
             <div className="mb-3"><AITabs selectedAIs={selectedAIs} activeTab={activeTab} onTabChange={setActiveTab} /></div>
           )}
           {result[activeTab] && <PromptPreview ai={activeTab} prompts={result} outputFormat={outputFormat} />}
           {selectedAIs.length > 1 && (
-            <div className="mt-3 pt-3 border-t border-border-default border-dashed flex justify-between items-center">
-              <span className="text-xs font-semibold text-text-secondary">Alles exportieren</span>
+            <div className="mt-4 pt-3 border-t-2 border-dashed border-line-soft flex justify-between items-center">
+              <span className="text-xs font-bold text-ink-soft">Alles exportieren</span>
               <CopyButton text={outputFormat === "JSON" ? JSON.stringify(result, null, 2) : toXML(result as Record<string, unknown>)} label="Alles kopieren" />
             </div>
           )}

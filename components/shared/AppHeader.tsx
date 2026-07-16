@@ -1,48 +1,37 @@
 "use client";
 
-import type { AppMode, BuilderMode } from "@/lib/types";
-import { ModeToggle } from "./ModeToggle";
+import type { AppMode } from "@/lib/types";
 
 interface AppHeaderProps {
   appMode: AppMode;
-  builderMode: BuilderMode;
   onAppModeChange: (mode: AppMode) => void;
-  onBuilderModeChange: (mode: BuilderMode) => void;
 }
 
-export function AppHeader({ appMode, builderMode, onAppModeChange, onBuilderModeChange }: AppHeaderProps) {
+export function AppHeader({ appMode, onAppModeChange }: AppHeaderProps) {
   return (
-    <header className="mb-6">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h1 className="text-xl font-bold text-text-primary">Image Prompt Generator</h1>
-          <p className="text-xs text-text-muted mt-0.5">
-            Optimierte Prompts für Midjourney V7, Flux & Nano Banana Pro
-          </p>
-        </div>
-        {appMode === "builder" && (
-          <ModeToggle mode={builderMode} onChange={onBuilderModeChange} />
-        )}
+    <header className="mb-7 flex items-center gap-4 flex-wrap">
+      <div className="bg-ink text-paper font-display font-bold text-sm uppercase tracking-[0.06em] px-4 py-2 rounded-md -rotate-1 shadow-[3px_3px_0_var(--color-line-soft)]">
+        Prompt-Baukasten
       </div>
-
-      <div className="flex gap-0 rounded-lg overflow-hidden border border-border-default">
+      <p className="text-xs text-ink-muted font-semibold">
+        Midjourney V7 · Flux 2 Pro · Nano Banana Pro
+      </p>
+      <nav aria-label="Modus" className="ml-auto flex gap-2.5">
         {([
-          { key: "builder" as const, label: "Prompt Builder" },
-          { key: "analyze" as const, label: "Bildanalyse" },
+          { key: "builder" as const, label: "Bauen" },
+          { key: "analyze" as const, label: "Analysieren" },
         ]).map(tab => (
           <button
             key={tab.key}
             onClick={() => onAppModeChange(tab.key)}
-            className={`flex-1 py-3 text-sm font-medium transition-colors cursor-pointer ${
-              appMode === tab.key
-                ? "bg-mj text-white font-semibold"
-                : "bg-bg-surface text-text-muted hover:text-text-secondary"
+            className={`px-4 py-2 text-xs uppercase tracking-[0.05em] font-display ${
+              appMode === tab.key ? "btn-brutal bg-card" : "btn-brutal-off font-bold"
             }`}
           >
             {tab.label}
           </button>
         ))}
-      </div>
+      </nav>
     </header>
   );
 }

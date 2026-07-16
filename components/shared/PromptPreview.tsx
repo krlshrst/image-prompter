@@ -25,16 +25,10 @@ const PROMPT_LABEL: Record<AISystem, string> = {
   "Nano Banana Pro": "Prompt",
 };
 
-const BG_COLORS: Record<AISystem, string> = {
-  "Midjourney": "bg-mj/5 border-mj/20",
-  "Flux": "bg-flux/5 border-flux/20",
-  "Nano Banana Pro": "bg-nb/5 border-nb/20",
-};
-
-const LABEL_COLORS: Record<AISystem, string> = {
-  "Midjourney": "text-mj",
-  "Flux": "text-flux",
-  "Nano Banana Pro": "text-nb",
+const CARD_BG: Record<AISystem, string> = {
+  "Midjourney": "bg-mj-pastel",
+  "Flux": "bg-flux-pastel",
+  "Nano Banana Pro": "bg-nb-pastel",
 };
 
 export function PromptPreview({ ai, prompts, outputFormat }: PromptPreviewProps) {
@@ -49,25 +43,25 @@ export function PromptPreview({ ai, prompts, outputFormat }: PromptPreviewProps)
   return (
     <div className="mb-3">
       {fullPrompt && (
-        <div className={`rounded-lg border p-3 mb-2 ${BG_COLORS[ai]}`}>
+        <div className={`card-brutal p-4 mb-3 ${CARD_BG[ai]}`}>
           <div className="flex justify-between items-center mb-2">
-            <span className={`text-[11px] font-semibold ${LABEL_COLORS[ai]}`}>
+            <span className="font-display text-[11px] font-bold uppercase tracking-[0.14em] text-ink-soft">
               {PROMPT_LABEL[ai]}
             </span>
             <CopyButton text={fullPrompt} label="Kopieren" />
           </div>
-          <p className="text-sm leading-relaxed text-text-primary">{fullPrompt}</p>
+          <p className="text-sm leading-relaxed text-ink">{fullPrompt}</p>
         </div>
       )}
 
       <details>
-        <summary className="cursor-pointer text-xs text-text-muted hover:text-text-secondary">
+        <summary className="cursor-pointer text-xs font-semibold text-ink-muted hover:text-ink">
           Alle Parameter ({outputFormat})
         </summary>
-        <div className="flex justify-end mt-1 mb-1">
+        <div className="flex justify-end mt-2 mb-1">
           <CopyButton text={paramStr} label={outputFormat} />
         </div>
-        <pre className="bg-bg-elevated rounded-lg p-3 text-[11px] overflow-x-auto whitespace-pre-wrap break-words leading-relaxed text-text-primary mt-1">
+        <pre className="card-brutal p-3 text-[11px] overflow-x-auto whitespace-pre-wrap break-words leading-relaxed text-ink-soft mt-1">
           {paramStr}
         </pre>
       </details>

@@ -8,10 +8,10 @@ interface AITabsProps {
   onTabChange: (ai: AISystem) => void;
 }
 
-const TAB_COLORS: Record<AISystem, string> = {
-  "Midjourney": "bg-mj text-white",
-  "Flux": "bg-flux text-white",
-  "Nano Banana Pro": "bg-nb text-white",
+const TAB_ON: Record<AISystem, string> = {
+  "Midjourney": "bg-mj-pastel",
+  "Flux": "bg-flux-pastel",
+  "Nano Banana Pro": "bg-nb-pastel",
 };
 
 const TAB_LABELS: Record<AISystem, string> = {
@@ -22,13 +22,13 @@ const TAB_LABELS: Record<AISystem, string> = {
 
 export function AITabs({ selectedAIs, activeTab, onTabChange }: AITabsProps) {
   return (
-    <div className="flex gap-0 rounded-lg overflow-hidden border border-border-default">
+    <div className="flex gap-2 flex-wrap">
       {selectedAIs.map(ai => (
         <button
           key={ai}
           onClick={() => onTabChange(ai)}
-          className={`flex-1 text-center py-2 px-3 text-xs font-semibold transition-colors cursor-pointer ${
-            activeTab === ai ? TAB_COLORS[ai] : "bg-bg-surface text-text-muted hover:text-text-secondary"
+          className={`px-4 py-1.5 text-xs uppercase tracking-wide font-display ${
+            activeTab === ai ? `btn-brutal ${TAB_ON[ai]}` : "btn-brutal-off font-semibold"
           }`}
         >
           {TAB_LABELS[ai]}

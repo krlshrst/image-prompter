@@ -1,26 +1,133 @@
 @import "tailwindcss";
 
 @theme {
-  /* Background layers */
-  --color-bg-base: #0a0a0f;
-  --color-bg-surface: #12121e;
-  --color-bg-elevated: #1a1a2e;
-  --color-bg-deep: #08080d;
+  /* Baukasten — Neo-Brutal palette */
+  --color-paper: #f2f4ee;
+  --color-card: #ffffff;
+  --color-ink: #191919;
+  --color-ink-soft: #3a3d34;
+  --color-ink-muted: #7a7d74;
+  --color-line-soft: #b9bcb2;
+  --color-action: #ffd337;
 
-  /* Borders */
-  --color-border-default: #1a1a2e;
-  --color-border-accent: #2a2a4e;
+  /* Category pastels */
+  --color-cat-motiv: #e4deff;
+  --color-cat-stil: #d7f0e2;
+  --color-cat-szene: #d9e8f7;
+  --color-cat-licht: #fff3bf;
+  --color-cat-kamera: #ffe1c7;
+  --color-cat-farben: #fbdce8;
 
-  /* Text */
-  --color-text-primary: #e0e0e0;
-  --color-text-secondary: #888888;
-  --color-text-muted: #666666;
-
-  /* AI Accent Colors */
+  /* AI accent colors (functional coding) */
   --color-mj: #7c6cff;
-  --color-mj-light: #a78bfa;
+  --color-mj-pastel: #e4deff;
   --color-flux: #f97316;
-  --color-flux-light: #fb923c;
+  --color-flux-pastel: #ffe1c7;
   --color-nb: #10b981;
-  --color-nb-light: #34d399;
+  --color-nb-pastel: #d7f0e2;
+
+  --font-display: "Futura", "Avenir Next", "Helvetica Neue", sans-serif;
+  --font-body: "Avenir Next", "Avenir", "Helvetica Neue", sans-serif;
+
+  --shadow-brutal-sm: 2px 2px 0 var(--color-ink);
+  --shadow-brutal: 3px 3px 0 var(--color-ink);
+  --shadow-brutal-lg: 4px 4px 0 var(--color-ink);
+}
+
+@layer components {
+  .card-brutal {
+    background: var(--color-card);
+    border: 2px solid var(--color-ink);
+    border-radius: 12px;
+    box-shadow: var(--shadow-brutal-lg);
+  }
+
+  .btn-brutal {
+    border: 2px solid var(--color-ink);
+    border-radius: 8px;
+    box-shadow: var(--shadow-brutal);
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 120ms ease, box-shadow 120ms ease;
+  }
+  .btn-brutal:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 var(--color-ink);
+  }
+  .btn-brutal:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--color-ink);
+  }
+
+  .btn-brutal-off {
+    border: 2px solid var(--color-line-soft);
+    border-radius: 8px;
+    color: var(--color-ink-muted);
+    background: transparent;
+    cursor: pointer;
+    transition: border-color 120ms ease, color 120ms ease;
+  }
+  .btn-brutal-off:hover {
+    border-color: var(--color-ink);
+    color: var(--color-ink);
+  }
+
+  .input-brutal {
+    width: 100%;
+    background: var(--color-paper);
+    border: 2px solid var(--color-ink);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: var(--color-ink);
+  }
+  .input-brutal::placeholder {
+    color: var(--color-ink-muted);
+  }
+  .input-brutal:focus {
+    outline: none;
+    box-shadow: var(--shadow-brutal-sm);
+    background: var(--color-card);
+  }
+
+  .label-brutal {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    margin-bottom: 5px;
+  }
+
+  .tile-brutal {
+    font-size: 11.5px;
+    font-weight: 600;
+    border: 2px solid var(--color-line-soft);
+    border-radius: 8px;
+    padding: 5px 10px;
+    background: var(--color-card);
+    color: var(--color-ink-soft);
+    cursor: pointer;
+    transition: border-color 120ms ease, transform 120ms ease, box-shadow 120ms ease;
+  }
+  .tile-brutal:hover {
+    border-color: var(--color-ink);
+  }
+  .tile-brutal.tile-on {
+    border-color: var(--color-ink);
+    background: var(--color-ink);
+    color: var(--color-card);
+    box-shadow: var(--shadow-brutal-sm);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn-brutal, .btn-brutal-off, .tile-brutal {
+      transition: none;
+    }
+    .btn-brutal:hover, .btn-brutal:active {
+      transform: none;
+    }
+  }
 }

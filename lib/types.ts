@@ -85,4 +85,3 @@ export interface HistoryEntry {
 }
 
 export type AppMode = "builder" | "analyze";
-export type BuilderMode = "wizard" | "dashboard";

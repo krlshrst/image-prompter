@@ -23,13 +23,11 @@ export function CopyButton({ text, label = "Kopieren", className = "" }: CopyBut
   return (
     <button
       onClick={handleCopy}
-      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-        copied
-          ? "bg-emerald-500 text-white"
-          : "bg-bg-elevated text-text-secondary hover:text-text-primary"
+      className={`btn-brutal px-3 py-1 text-xs ${
+        copied ? "bg-nb-pastel" : "bg-card"
       } ${className}`}
     >
-      {copied ? "Kopiert!" : label}
+      {copied ? "Kopiert ✓" : label}
     </button>
   );
 }
