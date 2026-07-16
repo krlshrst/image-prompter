@@ -1,4 +1,4 @@
-export type AISystem = "Midjourney" | "Flux" | "Nano Banana Pro";
+export type AISystem = "Midjourney" | "Flux" | "Nano Banana Pro" | "GPT Image 2";
 
 export interface PromptFormState {
   subject: string;
@@ -26,7 +26,9 @@ export interface PromptFormState {
   mj_seed: string;
   mj_style_raw: boolean;
   flux_style_preset: string;
+  flux_photo_tags: string[];
   nb_quality_tags: string[];
+  gpt_quality: string;
 }
 
 export interface MidjourneyPrompt {
@@ -71,10 +73,20 @@ export interface NanoBananaPrompt {
   full_prompt: string;
 }
 
+export interface GPTImage2Prompt {
+  model: string;
+  prompt: string;
+  size: string;
+  quality: string;
+  output_format: string;
+  text_content: string | null;
+}
+
 export type AssembledPrompts = {
   Midjourney?: MidjourneyPrompt;
   Flux?: FluxPrompt;
   "Nano Banana Pro"?: NanoBananaPrompt;
+  "GPT Image 2"?: GPTImage2Prompt;
 };
 
 export interface HistoryEntry {

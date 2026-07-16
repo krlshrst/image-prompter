@@ -12,6 +12,7 @@ const MODEL_BG: Record<AISystem, string> = {
   "Midjourney": "bg-mj-pastel",
   "Flux": "bg-flux-pastel",
   "Nano Banana Pro": "bg-nb-pastel",
+  "GPT Image 2": "bg-gpt-pastel",
 };
 
 export function AnalyzeView() {

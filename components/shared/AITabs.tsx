@@ -12,12 +12,14 @@ const TAB_ON: Record<AISystem, string> = {
   "Midjourney": "bg-mj-pastel",
   "Flux": "bg-flux-pastel",
   "Nano Banana Pro": "bg-nb-pastel",
+  "GPT Image 2": "bg-gpt-pastel",
 };
 
 const TAB_LABELS: Record<AISystem, string> = {
   "Midjourney": "Midjourney",
   "Flux": "Flux",
   "Nano Banana Pro": "Nano Banana",
+  "GPT Image 2": "GPT Image 2",
 };
 
 export function AITabs({ selectedAIs, activeTab, onTabChange }: AITabsProps) {

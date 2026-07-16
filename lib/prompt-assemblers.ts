@@ -1,20 +1,22 @@
-import type { PromptFormState, MidjourneyPrompt, FluxPrompt, NanoBananaPrompt, AssembledPrompts } from "./types";
+import type { PromptFormState, MidjourneyPrompt, FluxPrompt, NanoBananaPrompt, GPTImage2Prompt, AssembledPrompts } from "./types";
 import { ASPECT_RATIOS } from "./constants";
 
 export function assembleMidjourney(f: PromptFormState): MidjourneyPrompt {
+  // Framework 2026: Motiv zuerst (frühe Begriffe wirken stärker), dann Stil,
+  // Technik, Licht, Komposition, Atmosphäre.
   const descParts: string[] = [];
-  if (f.style_text) descParts.push(f.style_text);
   if (f.subject) descParts.push(f.subject);
   if (f.action) descParts.push(f.action);
   if (f.scene) descParts.push(f.scene);
-  if (f.camera) descParts.push(f.camera);
+  if (f.style_text) descParts.push(f.style_text);
   if (f.lens) descParts.push(f.lens);
   if (f.lighting) descParts.push(f.lighting);
+  if (f.camera) descParts.push(f.camera);
   if (f.mood) descParts.push(f.mood);
   if (f.colors_verbal) descParts.push(f.colors_verbal);
 
   const prompt = descParts.filter(Boolean).join(", ");
-  if (!prompt) return { prompt: "", style: null, aspect_ratio: null, version: "7", quality: "1", stylize: null, chaos: null, weird: null, style_mode: null, negative: null, seed: null, full_command: "" };
+  if (!prompt) return { prompt: "", style: null, aspect_ratio: null, version: f.mj_version || "8.1", quality: "1", stylize: null, chaos: null, weird: null, style_mode: null, negative: null, seed: null, full_command: "" };
 
   const params: string[] = [];
   if (f.ar) params.push(`--ar ${f.ar}`);
@@ -33,7 +35,7 @@ export function assembleMidjourney(f: PromptFormState): MidjourneyPrompt {
     prompt,
     style: f.style_text || null,
     aspect_ratio: f.ar || null,
-    version: f.mj_version || "7",
+    version: f.mj_version || "8.1",
     quality: f.mj_quality || "1",
     stylize: f.mj_stylize || null,
     chaos: f.mj_chaos || null,
@@ -67,10 +69,14 @@ export function assembleFlux(f: PromptFormState): FluxPrompt {
     sentences.push(`Farbpalette: ${f.colors_verbal}`);
   }
 
+  // Fotorealismus: Kameraparameter direkt einbauen — Flux versteht und setzt um
   const camParts: string[] = [];
   if (f.camera) camParts.push(f.camera);
   if (f.lens) camParts.push(f.lens);
   if (camParts.length) sentences.push(`Kamera: ${camParts.join(", ")}`);
+  if (f.flux_photo_tags?.length) {
+    sentences.push(`Fotografische Details: ${f.flux_photo_tags.join(", ")}`);
+  }
 
   // Flux 2 Pro rendert Text im Bild zuverlässig
   if (f.text_in_image) {
@@ -151,10 +157,63 @@ export function assembleNanoBanana(f: PromptFormState): NanoBananaPrompt {
   };
 }
 
+export function assembleGPTImage2(f: PromptFormState): GPTImage2Prompt {
+  // GPT Image 2 ist Reasoning-First: sequenzielle Struktur statt Keyword-Liste.
+  // Reihenfolge: Komposition → Stil → Subjekt → Umgebung → Licht → Farbe → Text → Qualität.
+  const sentences: string[] = [];
+
+  if (f.camera) sentences.push(`Komposition: ${f.camera}`);
+  if (f.style_text) sentences.push(`Stil: ${f.style_text}`);
+
+  const subjectParts: string[] = [];
+  if (f.subject) subjectParts.push(f.subject);
+  if (f.action) subjectParts.push(f.action);
+  if (subjectParts.length) sentences.push(subjectParts.join(", "));
+
+  if (f.scene) sentences.push(`Umgebung: ${f.scene}`);
+  if (f.lens) sentences.push(`Kamera-Einstellungen: ${f.lens}`);
+  if (f.lighting) sentences.push(`Licht: ${f.lighting}`);
+  if (f.mood) sentences.push(`Atmosphäre: ${f.mood}`);
+
+  if (f.colors_hex) sentences.push(`Farbpalette: ${f.colors_hex}`);
+  else if (f.colors_verbal) sentences.push(`Farbpalette: ${f.colors_verbal}`);
+
+  if (f.text_in_image) {
+    const textStyle = f.text_style ? ` (${f.text_style})` : "";
+    sentences.push(`Im Bild steht exakt der Text "${f.text_in_image}"${textStyle}, sauber und korrekt gerendert`);
+  }
+
+  // Positive Formulierung statt Verbot
+  if (f.negative_positive) sentences.push(f.negative_positive);
+
+  const prompt = sentences.filter(Boolean).join(". ") + (sentences.length ? "." : "");
+
+  // 2K nativ; Größe nach Seitenverhältnis
+  const sizeMap: Record<string, string> = {
+    "1:1": "2048x2048",
+    "4:5": "1638x2048",
+    "9:16": "1152x2048",
+    "16:9": "2048x1152",
+    "3:2": "2048x1365",
+    "21:9": "2048x878",
+    "4:1": "2048x512",
+  };
+
+  return {
+    model: "gpt-image-2",
+    prompt,
+    size: (f.ar && sizeMap[f.ar]) || "2048x2048",
+    quality: f.gpt_quality || "high",
+    output_format: "png",
+    text_content: f.text_in_image || null,
+  };
+}
+
 export function assembleAll(f: PromptFormState): AssembledPrompts {
   const result: AssembledPrompts = {};
   if (f.selectedAIs.includes("Midjourney")) result["Midjourney"] = assembleMidjourney(f);
   if (f.selectedAIs.includes("Flux")) result["Flux"] = assembleFlux(f);
   if (f.selectedAIs.includes("Nano Banana Pro")) result["Nano Banana Pro"] = assembleNanoBanana(f);
+  if (f.selectedAIs.includes("GPT Image 2")) result["GPT Image 2"] = assembleGPTImage2(f);
   return result;
 }

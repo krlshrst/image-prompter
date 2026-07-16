@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Prompt-Baukasten",
-  description: "Optimierte Prompts für Midjourney V7, Flux & Nano Banana Pro",
+  description: "Optimierte Prompts für Midjourney V8.1, Flux 2 Pro, Nano Banana Pro & GPT Image 2",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

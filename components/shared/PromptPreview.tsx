@@ -15,7 +15,7 @@ function getFullPrompt(ai: AISystem, prompts: AssembledPrompts): string | null {
   if (!data) return null;
   if (ai === "Midjourney" && "full_command" in data) return data.full_command || null;
   if (ai === "Nano Banana Pro" && "full_prompt" in data) return data.full_prompt || null;
-  if (ai === "Flux" && "prompt" in data) return data.prompt || null;
+  if ((ai === "Flux" || ai === "GPT Image 2") && "prompt" in data) return data.prompt || null;
   return null;
 }
 
@@ -23,12 +23,14 @@ const PROMPT_LABEL: Record<AISystem, string> = {
   "Midjourney": "/imagine",
   "Flux": "Prompt",
   "Nano Banana Pro": "Prompt",
+  "GPT Image 2": "Prompt",
 };
 
 const CARD_BG: Record<AISystem, string> = {
   "Midjourney": "bg-mj-pastel",
   "Flux": "bg-flux-pastel",
   "Nano Banana Pro": "bg-nb-pastel",
+  "GPT Image 2": "bg-gpt-pastel",
 };
 
 export function PromptPreview({ ai, prompts, outputFormat }: PromptPreviewProps) {

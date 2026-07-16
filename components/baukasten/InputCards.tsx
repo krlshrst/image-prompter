@@ -115,7 +115,7 @@ export function InputCards({ formState, setField, handleStyleSelect }: InputCard
           value={formState.lens}
           onChange={e => setField("lens", e.target.value)}
           className="input-brutal"
-          placeholder="z.B. 85mm, f/1.4"
+          placeholder="z.B. 85mm, f/1.8 — Flux setzt Kameraparameter direkt um"
         />
       </Card>
 

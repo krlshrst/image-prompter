@@ -42,6 +42,9 @@ export function PromptStrip({ formState, setField, reset }: PromptStripProps) {
   if (formState.lighting) add("lighting", formState.lighting, "bg-cat-licht", () => setField("lighting", ""));
   if (formState.camera) add("camera", formState.camera, "bg-cat-kamera", () => setField("camera", ""));
   if (formState.lens) add("lens", formState.lens, "bg-cat-kamera", () => setField("lens", ""));
+  if (formState.flux_photo_tags.length) {
+    add("flux_photo", formState.flux_photo_tags.join(", "), "bg-cat-kamera", () => setField("flux_photo_tags", []));
+  }
   if (formState.colors_verbal) add("colors_verbal", formState.colors_verbal, "bg-cat-farben", () => setField("colors_verbal", ""));
   if (formState.colors_hex) add("colors_hex", formState.colors_hex, "bg-cat-farben", () => setField("colors_hex", ""));
   if (formState.text_in_image) add("text", `„${formState.text_in_image}“`, "bg-cat-farben", () => setField("text_in_image", ""));

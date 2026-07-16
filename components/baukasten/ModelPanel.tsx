@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { AISystem, PromptFormState } from "@/lib/types";
-import { AI_SYSTEMS, QUALITY_TAGS_NB } from "@/lib/constants";
+import { AI_SYSTEMS, QUALITY_TAGS_NB, FLUX_PHOTO_TAGS, MODEL_HINTS } from "@/lib/constants";
 
 interface ModelPanelProps {
   formState: PromptFormState;
@@ -15,12 +15,14 @@ const MODEL_BG: Record<AISystem, string> = {
   "Midjourney": "bg-mj-pastel",
   "Flux": "bg-flux-pastel",
   "Nano Banana Pro": "bg-nb-pastel",
+  "GPT Image 2": "bg-gpt-pastel",
 };
 
 const MODEL_LABEL: Record<AISystem, string> = {
-  "Midjourney": "Midjourney V7",
+  "Midjourney": "Midjourney V8.1",
   "Flux": "Flux 2 Pro",
   "Nano Banana Pro": "Nano Banana Pro",
+  "GPT Image 2": "GPT Image 2",
 };
 
 const smallInput = "w-full input-brutal !px-2 !py-1 !text-[12px]";
@@ -30,6 +32,14 @@ export function ModelPanel({ formState, setField, toggleAI, toggleQualityTag }: 
   const mjActive = formState.selectedAIs.includes("Midjourney");
   const fluxActive = formState.selectedAIs.includes("Flux");
   const nbActive = formState.selectedAIs.includes("Nano Banana Pro");
+  const gptActive = formState.selectedAIs.includes("GPT Image 2");
+
+  function toggleFluxPhotoTag(tag: string) {
+    const tags = formState.flux_photo_tags.includes(tag)
+      ? formState.flux_photo_tags.filter(t => t !== tag)
+      : [...formState.flux_photo_tags, tag];
+    setField("flux_photo_tags", tags);
+  }
 
   return (
     <section className="card-brutal p-4 mb-5">
@@ -44,6 +54,7 @@ export function ModelPanel({ formState, setField, toggleAI, toggleQualityTag }: 
               key={ai}
               onClick={() => toggleAI(ai)}
               aria-pressed={active}
+              title={MODEL_HINTS[ai]}
               className={`px-4 py-2 text-xs uppercase tracking-[0.04em] font-display ${
                 active ? `btn-brutal ${MODEL_BG[ai]}` : "btn-brutal-off font-bold"
               }`}
@@ -53,6 +64,9 @@ export function ModelPanel({ formState, setField, toggleAI, toggleQualityTag }: 
           );
         })}
       </div>
+      <p className="text-[11px] text-ink-muted mt-2 mb-1">
+        Ästhetik → Midjourney · Fotorealismus → Flux · Editing → Nano Banana · Komplexe Anweisungen &amp; Text → GPT Image 2
+      </p>
 
       {mjActive && (
         <div className="mt-3 border-2 border-ink rounded-lg bg-mj-pastel/40 p-3">
@@ -72,7 +86,7 @@ export function ModelPanel({ formState, setField, toggleAI, toggleQualityTag }: 
               <div>
                 <label className="label-brutal" htmlFor="mj-version">Version</label>
                 <select id="mj-version" value={formState.mj_version} onChange={e => setField("mj_version", e.target.value)} className={smallInput}>
-                  <option value="7">V7</option><option value="6.1">V6.1</option>
+                  <option value="8.1">V8.1</option><option value="7">V7</option><option value="6.1">V6.1</option>
                 </select>
               </div>
               <div>
@@ -109,11 +123,44 @@ export function ModelPanel({ formState, setField, toggleAI, toggleQualityTag }: 
       {fluxActive && (
         <div className="mt-3 border-2 border-ink rounded-lg bg-flux-pastel/40 p-3">
           <span className="font-display text-[10px] font-bold uppercase tracking-[0.12em] text-ink-soft block mb-1">
-            Flux 2 Pro
+            Flux 2 Pro — Spitzenreiter Fotorealismus
           </span>
-          <p className="text-[12px] text-ink-soft leading-snug">
-            Versteht natürliche Sprache, <strong>Hex-Farbwerte</strong> (Karte „Farben &amp; Text“) und rendert <strong>Text im Bild</strong> zuverlässig. Auflösung bis ~4 MP.
+          <p className="text-[12px] text-ink-soft leading-snug mb-2">
+            Versteht <strong>Kameraparameter direkt</strong> (Brennweite, Blende im Objektiv-Feld), <strong>Hex-Farbwerte</strong> und rendert <strong>stilisierten Text</strong> (Neon, Graffiti, Gravur). Charakter-Konsistenz über bis zu 8 Referenzbilder. Nativ 4 MP.
           </p>
+          <span className="label-brutal">Fotografische Details</span>
+          <div className="flex flex-wrap gap-1.5">
+            {FLUX_PHOTO_TAGS.map(tag => (
+              <button
+                key={tag}
+                onClick={() => toggleFluxPhotoTag(tag)}
+                className={`tile-brutal ${formState.flux_photo_tags.includes(tag) ? "tile-on" : ""}`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {gptActive && (
+        <div className="mt-3 border-2 border-ink rounded-lg bg-gpt-pastel/40 p-3">
+          <div className="flex justify-between items-start gap-3 flex-wrap">
+            <div className="flex-1 min-w-55">
+              <span className="font-display text-[10px] font-bold uppercase tracking-[0.12em] text-ink-soft block mb-1">
+                GPT Image 2 — Reasoning-First
+              </span>
+              <p className="text-[12px] text-ink-soft leading-snug">
+                Denkschritt vor der Synthese: versteht mehrschichtige Prompts semantisch. Bestes Modell für <strong>sauberen Text im Bild</strong> (Etiketten, UI, Infografiken). Positive Formulierungen nutzen (Karte „Feinschliff“). 2K nativ.
+              </p>
+            </div>
+            <div>
+              <label className="label-brutal" htmlFor="gpt-quality">Quality</label>
+              <select id="gpt-quality" value={formState.gpt_quality} onChange={e => setField("gpt_quality", e.target.value)} className={smallInput}>
+                <option value="high">high</option><option value="medium">medium</option><option value="low">low</option>
+              </select>
+            </div>
+          </div>
         </div>
       )}
 

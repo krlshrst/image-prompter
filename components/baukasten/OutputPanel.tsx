@@ -99,6 +99,10 @@ export function OutputPanel({ formState, assembled, hasContent, onSave }: Output
           </button>
         )}
       </div>
+
+      <p className="text-[11px] text-ink-muted mt-3">
+        Tipp: Iterativ arbeiten — Basis-Prompt generieren, dann pro Iteration nur eine Sache ändern („mach das Licht wärmer“, „stärkeres Bokeh“).
+      </p>
     </section>
   );
 }

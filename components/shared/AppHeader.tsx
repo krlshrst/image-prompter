@@ -14,7 +14,7 @@ export function AppHeader({ appMode, onAppModeChange }: AppHeaderProps) {
         Prompt-Baukasten
       </div>
       <p className="text-xs text-ink-muted font-semibold">
-        Midjourney V7 · Flux 2 Pro · Nano Banana Pro
+        Midjourney V8.1 · Flux 2 Pro · Nano Banana Pro · GPT Image 2
       </p>
       <nav aria-label="Modus" className="ml-auto flex gap-2.5">
         {([
